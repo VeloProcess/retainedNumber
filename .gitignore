@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.local
+.env*.local
+.next/
+dist/
+build/
+*.log
+.DS_Store
+
+# Service Account Key (contém credenciais sensíveis)
+**/service-account-key.json
+backend/service-account-key.json
+
