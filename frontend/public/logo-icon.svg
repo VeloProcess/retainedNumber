@@ -1,0 +1,21 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00BFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0033FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Stylized S/lightning bolt shape -->
+  <path d="M12 8 L32 4 L52 8 L48 20 L32 24 L16 20 L20 32 L32 36 L48 32 L44 44 L32 48 L16 44 L20 56 L32 60 L52 56" 
+        stroke="url(#iconGradient)" 
+        stroke-width="3" 
+        fill="none" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  <path d="M20 32 L32 28 L44 32" 
+        stroke="url(#iconGradient)" 
+        stroke-width="3" 
+        fill="none" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+</svg>

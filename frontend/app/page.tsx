@@ -125,18 +125,43 @@ export default function Home() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Carregando...</div>
+      <div className="min-h-screen flex items-center justify-center relative">
+        {/* Logo no canto superior esquerdo */}
+        <div className="fixed top-4 left-4 z-50">
+          <img 
+            src="/logo-icon.png" 
+            alt="Velotax Logo" 
+            className="h-14 w-auto object-contain border-0 outline-none"
+            style={{ maxWidth: 'none', border: 'none', outline: 'none' }}
+          />
+        </div>
+        <div className="text-xl font-poppins">Carregando...</div>
       </div>
     )
   }
 
   if (status === 'unauthenticated') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 relative">
+        {/* Logo no canto superior esquerdo */}
+        <div className="fixed top-4 left-4 z-50">
+          <img 
+            src="/logo-icon.png" 
+            alt="Velotax Logo" 
+            className="h-14 w-auto object-contain border-0 outline-none"
+            style={{ maxWidth: 'none', border: 'none', outline: 'none' }}
+          />
+        </div>
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
-          <h1 className="text-2xl font-bold mb-4">Sistema de Números Fora Do Horário</h1>
-          <p className="text-gray-600 mb-6">Faça login com sua conta Google para continuar</p>
+          <div className="flex flex-col items-center gap-3 mb-4">
+            <img 
+              src="/logo-header.webp" 
+              alt="Velotax" 
+              className="h-12 w-auto object-contain"
+            />
+            <h1 className="text-2xl font-anton">Retidos na URA</h1>
+          </div>
+          <p className="text-poppins text-gray-600 mb-6">Faça login com sua conta Google para continuar</p>
           <button
             onClick={() => signIn('google')}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
@@ -149,15 +174,33 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Logo no canto superior esquerdo */}
+      <div className="fixed top-4 left-4 z-50">
+        <img 
+          src="/logo-icon.png" 
+          alt="Velotax Logo" 
+          className="h-14 w-auto object-contain border-0 outline-none"
+          style={{ maxWidth: 'none', border: 'none', outline: 'none' }}
+        />
+      </div>
+
       <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Sistema de Números Fora Do Horário</h1>
-          <div className="flex items-center gap-4">
+        <div className="w-full mx-auto px-4 py-4 pl-20 flex justify-between items-center">
+          <div className="flex-1"></div>
+          <div className="flex flex-col items-center gap-2 flex-1">
+            <img 
+              src="/logo-header.webp" 
+              alt="Velotax" 
+              className="h-10 w-auto object-contain"
+            />
+            <h1 className="text-xl md:text-2xl font-anton text-gray-900">Retidos na URA</h1>
+          </div>
+          <div className="flex-1 flex justify-end items-center gap-4">
             <button
               onClick={() => fetchNumbers(true)}
               disabled={refreshing || loading}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm font-poppins font-medium"
               title="Atualizar dados da planilha"
             >
               <svg
@@ -175,12 +218,21 @@ export default function Home() {
               </svg>
               {refreshing ? 'Atualizando...' : 'Atualizar Dados'}
             </button>
-            <span className="text-sm text-gray-600">
-              {session?.user?.email}
-            </span>
+            <div className="flex items-center gap-2">
+              {session?.user?.image && (
+                <img 
+                  src={session.user.image} 
+                  alt={session.user.name || 'Usuário'} 
+                  className="w-8 h-8 rounded-full border-2 border-gray-300"
+                />
+              )}
+              <span className="text-sm font-poppins text-gray-600">
+                {session?.user?.email}
+              </span>
+            </div>
             <button
               onClick={() => window.location.href = '/api/auth/signout'}
-              className="text-sm text-red-600 hover:text-red-700"
+              className="text-sm font-poppins text-red-600 hover:text-red-700"
             >
               Sair
             </button>
@@ -188,27 +240,27 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="w-full mx-auto px-6 py-8 pl-6">
         {loading ? (
           <div className="text-center py-12">
-            <div className="text-xl">Carregando números...</div>
+            <div className="text-xl font-poppins">Carregando números...</div>
           </div>
         ) : numbers.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-xl text-gray-600">
+            <div className="text-xl font-poppins text-gray-600">
               Nenhum número pendente encontrado
             </div>
           </div>
         ) : (
           <>
             <div className="mb-4 flex justify-between items-center">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm font-poppins text-gray-600">
                 Total de números pendentes: {numbers.length}
               </div>
               <button
                 onClick={() => fetchNumbers(true)}
                 disabled={refreshing || loading}
-                className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm font-poppins"
                 title="Atualizar dados da planilha"
               >
                 <svg

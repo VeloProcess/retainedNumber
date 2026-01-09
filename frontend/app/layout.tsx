@@ -1,13 +1,26 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Anton, Poppins } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 
-const inter = Inter({ subsets: ['latin'] })
+const anton = Anton({ 
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-anton',
+})
+
+const poppins = Poppins({ 
+  weight: ['300', '400', '500', '600', '700'],
+  subsets: ['latin'],
+  variable: '--font-poppins',
+})
 
 export const metadata: Metadata = {
-  title: 'Sistema de Números Fora Do Horário - 55pbx',
-  description: 'Gerenciamento de números de clientes que ligaram fora do horário',
+  title: 'Retidos na URA - Velotax',
+  description: 'Gerenciamento de números de clientes retidos na URA',
+  icons: {
+    icon: '/logo-icon.png',
+  },
 }
 
 export default function RootLayout({
@@ -17,10 +30,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>
+      <head>
+        <link rel="icon" href="/logo-icon.png" type="image/png" />
+      </head>
+      <body className={`${anton.variable} ${poppins.variable} font-poppins`}>
         <Providers>{children}</Providers>
       </body>
     </html>
   )
 }
-

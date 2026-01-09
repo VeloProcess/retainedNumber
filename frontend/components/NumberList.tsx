@@ -30,10 +30,10 @@ export default function NumberList({ numbers, onFeedbackClick }: NumberListProps
         >
           <div className="flex justify-between items-start">
             <div className="flex-1">
-              <div className="text-2xl font-bold text-gray-900 mb-2">
+              <div className="text-2xl font-anton text-gray-900 mb-2">
                 {number.numero}
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm font-poppins text-gray-600">
                 <div>
                   <span className="font-semibold">Data:</span> {number.data}
                 </div>
@@ -52,7 +52,7 @@ export default function NumberList({ numbers, onFeedbackClick }: NumberListProps
                 )}
               </div>
               {number.cpfCnpj && (
-                <div className="mt-2 text-sm text-gray-600">
+                <div className="mt-2 text-sm font-poppins text-gray-600">
                   <span className="font-semibold">CPF/CNPJ:</span> {number.cpfCnpj}
                 </div>
               )}
@@ -61,19 +61,19 @@ export default function NumberList({ numbers, onFeedbackClick }: NumberListProps
             <div className="flex flex-col gap-2 ml-4">
               <button
                 onClick={() => onFeedbackClick(number, 'Contato efetuado')}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm font-medium"
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm font-poppins font-medium"
               >
                 Contato Efetuado
               </button>
               <button
                 onClick={() => onFeedbackClick(number, 'Tentativa falha')}
-                className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition text-sm font-medium"
+                className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition text-sm font-poppins font-medium"
               >
                 Tentativa Falha
               </button>
               <button
                 onClick={() => onFeedbackClick(number, 'Número inválido')}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition text-sm font-medium"
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition text-sm font-poppins font-medium"
               >
                 Número Inválido
               </button>

@@ -62,7 +62,7 @@ export default function FeedbackModal({
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-start mb-4">
-            <h2 className="text-2xl font-bold">Registrar Feedback</h2>
+            <h2 className="text-2xl font-anton">Registrar Feedback</h2>
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -72,14 +72,14 @@ export default function FeedbackModal({
           </div>
 
           <div className="mb-4">
-            <div className="text-sm text-gray-600 mb-2">
+            <div className="text-sm font-poppins text-gray-600 mb-2">
               <span className="font-semibold">Número:</span> {number.numero}
             </div>
-            <div className="text-sm text-gray-600 mb-2">
+            <div className="text-sm font-poppins text-gray-600 mb-2">
               <span className="font-semibold">Data/Hora:</span> {number.data} {number.hora}
             </div>
             <div className="mt-4">
-              <span className={`inline-block px-4 py-2 rounded text-white font-semibold ${getStatusColor()}`}>
+              <span className={`inline-block px-4 py-2 rounded text-white font-poppins font-semibold ${getStatusColor()}`}>
                 {status}
               </span>
             </div>
@@ -87,7 +87,7 @@ export default function FeedbackModal({
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label htmlFor="comentario" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="comentario" className="block text-sm font-poppins font-medium text-gray-700 mb-2">
                 Comentário <span className="text-red-600">*</span>
               </label>
               <textarea
@@ -103,7 +103,7 @@ export default function FeedbackModal({
                 required
               />
               {error && (
-                <p className="mt-1 text-sm text-red-600">{error}</p>
+                <p className="mt-1 text-sm font-poppins text-red-600">{error}</p>
               )}
             </div>
 
@@ -111,13 +111,13 @@ export default function FeedbackModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 font-poppins hover:bg-gray-50 transition"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md font-poppins hover:bg-blue-700 transition"
               >
                 Confirmar
               </button>
