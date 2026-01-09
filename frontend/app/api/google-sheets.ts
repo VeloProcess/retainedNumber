@@ -18,20 +18,13 @@ export async function getGoogleSheetsClient() {
         
         // Corrigir quebras de linha na chave privada se necessário
         if (credentials.private_key) {
-          // Se a chave privada tem quebras de linha reais, substituir por \n
-          // Isso acontece quando o JSON é copiado com quebras de linha
-          credentials.private_key = credentials.private_key.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
-          
-          // Garantir que tenha o formato correto com \n escapado
-          // Se já está correto, não fazer nada
-          if (!credentials.private_key.includes('\\n')) {
-            // Se não tem \n escapado, verificar se tem quebras reais
-            // Se sim, está ok (Node.js aceita quebras reais também)
-            // Mas vamos garantir o formato padrão
-            if (credentials.private_key.includes('\n')) {
-              // Já tem quebras reais, está ok
-            }
-          }
+          // Normalizar quebras de linha: converter todas as variações para \n real
+          // Isso trata casos onde o JSON foi colado com diferentes formatos
+          credentials.private_key = credentials.private_key
+            .replace(/\\r\\n/g, '\n')  // \r\n escapado
+            .replace(/\\n/g, '\n')     // \n escapado (mais comum no Vercel)
+            .replace(/\r\n/g, '\n')   // \r\n real
+            .replace(/\r/g, '\n')      // \r sozinho
         }
         
         console.log('✅ Service Account carregada da variável de ambiente')
@@ -65,15 +58,14 @@ export async function getGoogleSheetsClient() {
       // Remover espaços extras no início/fim
       credentials.private_key = credentials.private_key.trim()
       
-      // Se a chave tem \\n (escapado duplo), converter para \n simples
-      if (credentials.private_key.includes('\\\\n')) {
-        credentials.private_key = credentials.private_key.replace(/\\\\n/g, '\n')
-      }
-      
-      // Se tem \n escapado (string literal), converter para quebra real
-      if (credentials.private_key.includes('\\n') && !credentials.private_key.includes('\n')) {
-        credentials.private_key = credentials.private_key.replace(/\\n/g, '\n')
-      }
+      // Normalizar quebras de linha: converter todas as variações para \n real
+      // Isso trata casos onde o JSON foi colado com diferentes formatos
+      credentials.private_key = credentials.private_key
+        .replace(/\\\\n/g, '\n')      // \\n (duplo escape) -> \n real
+        .replace(/\\r\\n/g, '\n')     // \r\n escapado -> \n real
+        .replace(/\\n/g, '\n')        // \n escapado -> \n real (mais comum)
+        .replace(/\r\n/g, '\n')       // \r\n real -> \n
+        .replace(/\r/g, '\n')         // \r sozinho -> \n
       
       // Garantir que começa e termina corretamente
       if (!credentials.private_key.startsWith('-----BEGIN PRIVATE KEY-----')) {
@@ -82,6 +74,9 @@ export async function getGoogleSheetsClient() {
       if (!credentials.private_key.endsWith('-----END PRIVATE KEY-----')) {
         throw new Error('Chave privada inválida: deve terminar com "-----END PRIVATE KEY-----"')
       }
+      
+      // Log para debug (sem mostrar a chave completa)
+      console.log(`Chave privada formatada: ${credentials.private_key.substring(0, 50)}...`)
     }
     
     const auth = new google.auth.GoogleAuth({
@@ -94,7 +89,31 @@ export async function getGoogleSheetsClient() {
   } catch (error: any) {
     console.error('❌ Erro ao autenticar com Service Account:', error.message)
     console.error('Stack:', error.stack)
-    throw new Error(`Falha na autenticação com Google Sheets: ${error.message}`)
+    
+    // Diagnóstico mais detalhado
+    let errorMessage = error.message || 'Erro desconhecido'
+    
+    // Verificar se é erro de parse JSON
+    if (error.message?.includes('JSON') || error.message?.includes('parse')) {
+      errorMessage = `Erro ao fazer parse do GOOGLE_SERVICE_ACCOUNT_KEY. Verifique se o JSON está válido. Erro: ${error.message}`
+    }
+    
+    // Verificar se é erro de arquivo não encontrado
+    if (error.message?.includes('não encontrado') || error.message?.includes('not found')) {
+      errorMessage = `Arquivo de Service Account não encontrado. Configure GOOGLE_SERVICE_ACCOUNT_KEY como variável de ambiente no Vercel. Erro: ${error.message}`
+    }
+    
+    // Verificar se é erro de chave privada inválida
+    if (error.message?.includes('private_key') || error.message?.includes('PRIVATE KEY')) {
+      errorMessage = `Chave privada da Service Account inválida. Verifique se as quebras de linha estão escapadas como \\n. Erro: ${error.message}`
+    }
+    
+    // Verificar se é erro de campos faltando
+    if (error.message?.includes('client_email') || error.message?.includes('private_key')) {
+      errorMessage = `Service Account inválida: faltam campos obrigatórios. Verifique se o JSON está completo. Erro: ${error.message}`
+    }
+    
+    throw new Error(`Falha na autenticação com Google Sheets: ${errorMessage}`)
   }
 }
 

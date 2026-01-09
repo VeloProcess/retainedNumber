@@ -106,16 +106,82 @@ export async function GET() {
     console.error('Stack completo:', error.stack)
     console.error('Tipo do erro:', error.constructor.name)
     
-    // Retornar mensagem de erro mais detalhada
+    // Diagnóstico detalhado do erro
     const errorMessage = error.message || 'Erro desconhecido'
-    const errorDetails = {
+    let diagnosticInfo: any = {
       error: 'Erro ao buscar números da planilha',
       message: errorMessage,
       type: error.constructor.name,
-      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
     }
     
-    return NextResponse.json(errorDetails, { status: 500 })
+    // Verificar se é erro de autenticação
+    if (errorMessage.includes('autenticação') || errorMessage.includes('authentication') || errorMessage.includes('credentials')) {
+      diagnosticInfo.diagnostic = 'Erro de autenticação com Google Sheets'
+      diagnosticInfo.possibleCauses = [
+        'GOOGLE_SERVICE_ACCOUNT_KEY não está configurada no Vercel',
+        'GOOGLE_SERVICE_ACCOUNT_KEY está em formato inválido',
+        'Chave privada da Service Account está mal formatada'
+      ]
+      diagnosticInfo.checkSteps = [
+        'Verifique se GOOGLE_SERVICE_ACCOUNT_KEY está configurada no Vercel',
+        'Verifique se o JSON está válido (teste em jsonlint.com)',
+        'Verifique se a chave privada tem \\n escapado (não quebras reais)'
+      ]
+    }
+    
+    // Verificar se é erro de permissão
+    if (errorMessage.includes('permission') || errorMessage.includes('Permission') || errorMessage.includes('403')) {
+      diagnosticInfo.diagnostic = 'Erro de permissão ao acessar planilha'
+      diagnosticInfo.possibleCauses = [
+        'Service Account não tem acesso à planilha',
+        'Planilha não foi compartilhada com o email da Service Account'
+      ]
+      diagnosticInfo.checkSteps = [
+        'Abra o arquivo service-account-key.json e copie o client_email',
+        'Compartilhe a planilha com esse email dando permissão de Editor',
+        'Verifique se GOOGLE_SHEETS_ID está correto'
+      ]
+    }
+    
+    // Verificar se é erro de planilha não encontrada
+    if (errorMessage.includes('not found') || errorMessage.includes('404') || errorMessage.includes('Unable to parse range')) {
+      diagnosticInfo.diagnostic = 'Planilha ou aba não encontrada'
+      diagnosticInfo.possibleCauses = [
+        'GOOGLE_SHEETS_ID está incorreto',
+        'Planilha foi deletada ou movida',
+        'Aba não existe na planilha'
+      ]
+      diagnosticInfo.checkSteps = [
+        'Verifique se GOOGLE_SHEETS_ID está correto no Vercel',
+        'Verifique se a planilha existe e está acessível',
+        'Verifique se a planilha tem pelo menos uma aba'
+      ]
+    }
+    
+    // Verificar se é erro de variável de ambiente
+    if (errorMessage.includes('GOOGLE_SERVICE_ACCOUNT_KEY') || errorMessage.includes('não encontrado')) {
+      diagnosticInfo.diagnostic = 'Variável de ambiente não configurada'
+      diagnosticInfo.possibleCauses = [
+        'GOOGLE_SERVICE_ACCOUNT_KEY não está definida no Vercel'
+      ]
+      diagnosticInfo.checkSteps = [
+        'Vá em Settings > Environment Variables no Vercel',
+        'Adicione GOOGLE_SERVICE_ACCOUNT_KEY com o conteúdo do service-account-key.json',
+        'Faça um novo deploy após adicionar a variável'
+      ]
+    }
+    
+    // Adicionar informações de debug em desenvolvimento
+    if (process.env.NODE_ENV === 'development') {
+      diagnosticInfo.stack = error.stack
+      diagnosticInfo.envCheck = {
+        hasServiceAccountKey: !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY,
+        hasSpreadsheetId: !!process.env.GOOGLE_SHEETS_ID,
+        spreadsheetId: process.env.GOOGLE_SHEETS_ID || 'não configurado'
+      }
+    }
+    
+    return NextResponse.json(diagnosticInfo, { status: 500 })
   }
 }
 
