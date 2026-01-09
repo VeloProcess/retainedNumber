@@ -103,13 +103,19 @@ export async function GET() {
     return NextResponse.json(numbers)
   } catch (error: any) {
     console.error('❌ Erro ao buscar números:', error)
-    return NextResponse.json(
-      { 
-        error: 'Erro ao buscar números da planilha', 
-        details: error.message,
-      },
-      { status: 500 }
-    )
+    console.error('Stack completo:', error.stack)
+    console.error('Tipo do erro:', error.constructor.name)
+    
+    // Retornar mensagem de erro mais detalhada
+    const errorMessage = error.message || 'Erro desconhecido'
+    const errorDetails = {
+      error: 'Erro ao buscar números da planilha',
+      message: errorMessage,
+      type: error.constructor.name,
+      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    }
+    
+    return NextResponse.json(errorDetails, { status: 500 })
   }
 }
 
