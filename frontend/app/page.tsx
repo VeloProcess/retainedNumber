@@ -43,12 +43,36 @@ export default function Home() {
       } else {
         setLoading(true)
       }
-      // Backend agora usa Service Account, não precisa mais do token OAuth
-      const response = await axios.get('/api/numbers')
-      setNumbers(response.data)
-    } catch (error) {
-      console.error('Erro ao buscar números:', error)
-      alert('Erro ao carregar números da planilha')
+      
+      // Limpar números anteriores para mostrar que está atualizando
+      if (showRefreshing) {
+        // Não limpar, apenas mostrar loading
+      }
+      
+      // Adicionar timestamp para evitar cache e garantir dados atualizados
+      const timestamp = new Date().getTime()
+      console.log(`🔄 Buscando dados atualizados da planilha (timestamp: ${timestamp})...`)
+      
+      const response = await axios.get(`/api/numbers?t=${timestamp}&_=${Date.now()}`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      })
+      
+      // Atualizar estado com os novos dados (sempre substituir, não fazer merge)
+      const newNumbers = response.data || []
+      setNumbers(newNumbers)
+      console.log(`✅ Dados atualizados com sucesso: ${newNumbers.length} números encontrados`)
+      
+      if (showRefreshing) {
+        console.log('🔄 Lista atualizada da planilha!')
+      }
+    } catch (error: any) {
+      console.error('❌ Erro ao buscar números:', error)
+      const errorMessage = error.response?.data?.message || error.message || 'Erro desconhecido'
+      alert(`Erro ao carregar números da planilha: ${errorMessage}`)
     } finally {
       setLoading(false)
       setRefreshing(false)

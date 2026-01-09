@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 import { getGoogleSheetsClient, SPREADSHEET_ID } from '../google-sheets'
 
+// Desabilitar cache para sempre buscar dados atualizados
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET() {
   try {
     console.log('Buscando números da planilha...')
@@ -100,7 +104,16 @@ export async function GET() {
     })
 
     console.log(`Números únicos processados: ${numbers.length} (duplicados removidos)`)
-    return NextResponse.json(numbers)
+    
+    // Retornar com headers que desabilitam cache
+    return NextResponse.json(numbers, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'Surrogate-Control': 'no-store'
+      }
+    })
   } catch (error: any) {
     console.error('❌ Erro ao buscar números:', error)
     console.error('Stack completo:', error.stack)
