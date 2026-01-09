@@ -28,6 +28,7 @@ export default function Home() {
   const [selectedNumber, setSelectedNumber] = useState<NumberData | null>(null)
   const [showModal, setShowModal] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState<string>('')
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -35,9 +36,13 @@ export default function Home() {
     }
   }, [status, session])
 
-  const fetchNumbers = async () => {
+  const fetchNumbers = async (showRefreshing = false) => {
     try {
-      setLoading(true)
+      if (showRefreshing) {
+        setRefreshing(true)
+      } else {
+        setLoading(true)
+      }
       // Backend agora usa Service Account, não precisa mais do token OAuth
       const response = await axios.get('/api/numbers')
       setNumbers(response.data)
@@ -46,6 +51,7 @@ export default function Home() {
       alert('Erro ao carregar números da planilha')
     } finally {
       setLoading(false)
+      setRefreshing(false)
     }
   }
 
@@ -111,6 +117,27 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">Sistema de Números Fora Do Horário</h1>
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => fetchNumbers(true)}
+              disabled={refreshing || loading}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+              title="Atualizar dados da planilha"
+            >
+              <svg
+                className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+              {refreshing ? 'Atualizando...' : 'Atualizar Dados'}
+            </button>
             <span className="text-sm text-gray-600">
               {session?.user?.email}
             </span>
@@ -137,8 +164,31 @@ export default function Home() {
           </div>
         ) : (
           <>
-            <div className="mb-4 text-sm text-gray-600">
-              Total de números pendentes: {numbers.length}
+            <div className="mb-4 flex justify-between items-center">
+              <div className="text-sm text-gray-600">
+                Total de números pendentes: {numbers.length}
+              </div>
+              <button
+                onClick={() => fetchNumbers(true)}
+                disabled={refreshing || loading}
+                className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                title="Atualizar dados da planilha"
+              >
+                <svg
+                  className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                {refreshing ? 'Atualizando...' : 'Atualizar'}
+              </button>
             </div>
             <NumberList
               numbers={numbers}
