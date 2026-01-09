@@ -39,7 +39,7 @@ export default function Home() {
     try {
       setLoading(true)
       // Backend agora usa Service Account, não precisa mais do token OAuth
-      const response = await axios.get('http://localhost:9080/api/numbers')
+      const response = await axios.get('/api/numbers')
       setNumbers(response.data)
     } catch (error) {
       console.error('Erro ao buscar números:', error)
@@ -60,7 +60,7 @@ export default function Home() {
 
     try {
       // Backend agora usa Service Account, não precisa mais do token OAuth
-      await axios.post('http://localhost:9080/api/feedback', {
+      await axios.post('/api/feedback', {
         rowIndex: selectedNumber.rowIndex,
         status: selectedStatus,
         comentario,
