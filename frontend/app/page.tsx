@@ -89,13 +89,21 @@ export default function Home() {
     if (!selectedNumber || !session?.user?.email) return
 
     try {
-      // Backend agora usa Service Account, não precisa mais do token OAuth
-      await axios.post('/api/feedback', {
+      console.log('📝 Enviando feedback:', {
+        rowIndex: selectedNumber.rowIndex,
+        status: selectedStatus,
+        comentario,
+        userEmail: session.user.email
+      })
+      
+      const response = await axios.post('/api/feedback', {
         rowIndex: selectedNumber.rowIndex,
         status: selectedStatus,
         comentario,
         userEmail: session.user.email,
       })
+
+      console.log('✅ Feedback enviado com sucesso:', response.data)
 
       // Remover número da listagem
       setNumbers(numbers.filter((n) => n.rowIndex !== selectedNumber.rowIndex))
@@ -104,9 +112,14 @@ export default function Home() {
       setSelectedStatus('')
       
       alert('Feedback registrado com sucesso!')
-    } catch (error) {
-      console.error('Erro ao registrar feedback:', error)
-      alert('Erro ao registrar feedback')
+    } catch (error: any) {
+      console.error('❌ Erro ao registrar feedback:', error)
+      console.error('Resposta do erro:', error.response?.data)
+      
+      const errorMessage = error.response?.data?.message || error.message || 'Erro desconhecido'
+      const errorDetails = error.response?.data?.error || 'Erro ao registrar feedback'
+      
+      alert(`Erro ao registrar feedback: ${errorDetails}\n\nDetalhes: ${errorMessage}`)
     }
   }
 
